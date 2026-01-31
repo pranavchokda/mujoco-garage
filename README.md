@@ -1,2 +1,2 @@
-# mujoco-garage.github.io
+# mujoco-garage
 Experiments with MuJoCo 
