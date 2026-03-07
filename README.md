@@ -84,3 +84,15 @@ npm run build:ur5e  # outputs to dist/examples/02_universal_ur5e/
 ```
 
 Deployment to GitHub Pages is automated via `.github/workflows/deploy.yml` on every push to `main`.
+
+---
+
+## References & Thanks
+
+- **[MuJoCo](https://mujoco.org/)** — DeepMind's physics engine, now open source. The core simulator running in the browser via WebAssembly.
+- **[mujoco-js](https://github.com/zalo/mujoco-js)** — WebAssembly port of MuJoCo that makes browser-based simulation possible.
+- **[MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie)** — Google DeepMind's collection of high-quality robot models. The UR5e model and all mesh assets are sourced from here.
+- **[Universal Robots](https://www.universal-robots.com/)** — Creators of the UR5e 6-DOF collaborative robot arm featured in example 02.
+- **[Three.js](https://threejs.org/)** — 3D rendering library used for the WebGL scene, lighting, and camera controls.
+- **[coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker)** — Guido Zuidhof's service worker trick that enables SharedArrayBuffer on GitHub Pages by injecting COOP/COEP headers client-side.
+- **[Claude](https://claude.ai/) by [Anthropic](https://www.anthropic.com/)** — AI assistant that helped with this project.
