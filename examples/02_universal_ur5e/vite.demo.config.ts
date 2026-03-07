@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   // Root is relative to cwd (repo root) when run via `npm run dev1:demo`
   root: 'examples/02_universal_ur5e',
-  base: '/mujoco-garage.github.io/examples/02_universal_ur5e/',
+  base: '/mujoco-garage/examples/02_universal_ur5e/',
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
