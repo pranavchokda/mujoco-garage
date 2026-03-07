@@ -1,7 +1,10 @@
-/* coi-serviceworker v0.1.7 - Guido Zuidhof, licensed under MIT
- * https://github.com/gzuidhof/coi-serviceworker
+/*
+ * coi-serviceworker — inspired by https://github.com/gzuidhof/coi-serviceworker (MIT)
+ * Original concept by Guido Zuidhof. This is an independent implementation.
+ *
  * Injects Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers
- * so that SharedArrayBuffer and WASM threads work on GitHub Pages.
+ * so that SharedArrayBuffer and WASM threads work on GitHub Pages, which does
+ * not support setting custom HTTP response headers.
  */
 
 if (typeof window === 'undefined') {

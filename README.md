@@ -96,3 +96,15 @@ Deployment to GitHub Pages is automated via `.github/workflows/deploy.yml` on ev
 - **[Three.js](https://threejs.org/)** — 3D rendering library used for the WebGL scene, lighting, and camera controls.
 - **[coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker)** — Guido Zuidhof's service worker trick that enables SharedArrayBuffer on GitHub Pages by injecting COOP/COEP headers client-side.
 - **[Claude](https://claude.ai/) by [Anthropic](https://www.anthropic.com/)** — AI assistant that helped with this project.
+
+---
+
+## Licenses & Attribution
+
+| Component | License | Notes |
+|-----------|---------|-------|
+| [mujoco-js](https://github.com/google-deepmind/mujoco) | [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) | © Google DeepMind |
+| [Three.js](https://threejs.org/) | [MIT](https://github.com/mrdoob/three.js/blob/dev/LICENSE) | © 2010–2025 three.js authors |
+| [MuJoCo Menagerie — UR5e model](https://github.com/google-deepmind/mujoco_menagerie/tree/main/universal_robots_ur5e) | [BSD-3-Clause](https://github.com/google-deepmind/mujoco_menagerie/blob/main/universal_robots_ur5e/LICENSE) | © Universal Robots; assets fetched at runtime, not bundled |
+| [coi-serviceworker concept](https://github.com/gzuidhof/coi-serviceworker) | [MIT](https://github.com/gzuidhof/coi-serviceworker/blob/master/LICENSE) | Original concept by Guido Zuidhof; `public/coi-serviceworker.js` is an independent implementation |
+| Project source code | MIT | © mujoco-garage contributors |
