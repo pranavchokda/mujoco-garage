@@ -1,0 +1,27 @@
+{
+    "scripts": {
+    "test": "node --loader ts-node/esm --trace-warnings tests/run_tests.mjs",
+    "benchmark": "node --loader ts-node/esm --trace-warnings tests/run_benchmarks.mjs",
+    "dev:sandbox": "vite --config tests/sandbox/vite.sandbox.config.ts",
+    "build:sandbox": "vite build --config tests/sandbox/vite.sandbox.config.ts",
+    "dev:demo": "vite --config examples/01_mujoco_example/vite.demo.config.ts",
+    "dev1:demo": "vite --config examples/02_universal_ur5e/vite.demo.config.ts",
+    "build:demo": "vite build --config demo_app/vite.demo.config.ts",
+    "build:ur5e": "vite build --config examples/02_universal_ur5e/vite.demo.config.ts"
+  },
+  "dependencies": {
+    "esbuild": "^0.25.12",
+    "mujoco-js": "^0.0.7",
+    "three": "^0.181.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@types/three": "^0.182.0",
+    "@types/jasmine": "^5.1.8",
+    "jasmine": "^5.9.0",
+    "three": "^0.178.0",
+    "ts-node": "^10.9.2",
+    "typescript": "5.8.2",
+    "vite": "^7.0.6"
+  }
+}
