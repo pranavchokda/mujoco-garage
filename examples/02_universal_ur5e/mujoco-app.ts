@@ -58,8 +58,6 @@ export class MujocoApp {
 
     setStatus('Loading MuJoCo WASM...');
     this.mujoco = await loadMujoco();
-
-    // Prepare Virtual File System
     try { this.mujoco.FS.mkdir('/assets'); } catch (_) {}
 
     setStatus('Downloading UR5e model assets...');
@@ -73,8 +71,7 @@ export class MujocoApp {
 
     setStatus('Building model...');
     this.model = this.mujoco.MjModel.loadFromXML('/scene.xml');
-    this.data = new this.mujoco.MjData(this.model);
-
+    this.data  = new this.mujoco.MjData(this.model);
     this.mujoco.mj_forward(this.model, this.data);
 
     setStatus('Setting up renderer...');
@@ -82,13 +79,9 @@ export class MujocoApp {
     this.buildGeomMeshes();
     this.buildUI();
 
-    if (statusEl) statusEl.remove();
+    statusEl?.remove();
     this.loop();
   }
-
-  // ---------------------------------------------------------------------------
-  // Three.js setup
-  // ---------------------------------------------------------------------------
 
   private setupThree() {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
@@ -103,8 +96,8 @@ export class MujocoApp {
     this.scene.background = new THREE.Color(0x1e3260);
     this.scene.fog = new THREE.Fog(0x1e3260, 10, 25);
 
-    // MuJoCo uses Z-up. Rotate a root group -90° around X so the scene
-    // appears Y-up in Three.js without touching any MuJoCo transforms.
+    // MuJoCo is Z-up; rotate the root group so Three.js sees Y-up without
+    // touching any per-geom transforms.
     this.mujocoRoot = new THREE.Group();
     this.mujocoRoot.rotation.x = -Math.PI / 2;
     this.scene.add(this.mujocoRoot);
@@ -127,11 +120,11 @@ export class MujocoApp {
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
     key.shadow.camera.near = 0.1;
-    key.shadow.camera.far = 15;
-    key.shadow.camera.top = 2;
+    key.shadow.camera.far  = 15;
+    key.shadow.camera.top    =  2;
     key.shadow.camera.bottom = -0.5;
-    key.shadow.camera.left = -2;
-    key.shadow.camera.right = 2;
+    key.shadow.camera.left   = -2;
+    key.shadow.camera.right  =  2;
     key.shadow.bias = -0.001;
     this.mujocoRoot.add(key);
 
@@ -164,12 +157,8 @@ export class MujocoApp {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // Build Three.js meshes from MuJoCo model mesh data
-  // ---------------------------------------------------------------------------
-
   private buildGeomMeshes() {
-    const model = this.model;
+    const { model } = this;
     const matCache = new Map<number, THREE.MeshStandardMaterial>();
 
     const getMaterial = (geomIdx: number): THREE.MeshStandardMaterial => {
@@ -180,10 +169,9 @@ export class MujocoApp {
         const r = Math.min(1, model.mat_rgba[matId * 4 + 0] * 1.8);
         const g = Math.min(1, model.mat_rgba[matId * 4 + 1] * 1.8);
         const b = Math.min(1, model.mat_rgba[matId * 4 + 2] * 1.8);
-        const color = new THREE.Color(r, g, b);
         const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
         const mat = new THREE.MeshStandardMaterial({
-          color,
+          color: new THREE.Color(r, g, b),
           metalness: luminance < 0.2 ? 0.7 : 0.5,
           roughness: luminance < 0.2 ? 0.3 : 0.25,
           envMapIntensity: 1.5,
@@ -212,14 +200,8 @@ export class MujocoApp {
       const fStart = model.mesh_faceadr[meshId];
       const fCount = model.mesh_facenum[meshId];
 
-      const positions = Float32Array.from(
-        { length: vCount * 3 },
-        (_, i) => model.mesh_vert[vStart * 3 + i]
-      );
-      const indices = Uint32Array.from(
-        { length: fCount * 3 },
-        (_, i) => model.mesh_face[fStart * 3 + i]
-      );
+      const positions = Float32Array.from({ length: vCount * 3 }, (_, i) => model.mesh_vert[vStart * 3 + i]);
+      const indices   = Uint32Array.from({ length: fCount * 3 },  (_, i) => model.mesh_face[fStart * 3 + i]);
 
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -234,31 +216,20 @@ export class MujocoApp {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Joint control UI
-  // ---------------------------------------------------------------------------
-
   private buildUI() {
-    const model = this.model;
-    const nu = model.nu;
-    if (nu === 0) return;
+    const { model } = this;
+    if (model.nu === 0) return;
 
     const panel = document.createElement('div');
     panel.id = 'joint-panel';
     panel.innerHTML = '<b>UR5e Joints</b>';
 
-    for (let i = 0; i < nu; i++) {
+    for (let i = 0; i < model.nu; i++) {
       const nameAdr = model.name_actuatoradr[i];
       let name = '';
       for (let c = nameAdr; model.names[c] !== 0; c++) {
         name += String.fromCharCode(model.names[c]);
       }
-
-      const row = document.createElement('div');
-      row.className = 'joint-row';
-
-      const header = document.createElement('div');
-      header.className = 'joint-label';
 
       const nameSpan = document.createElement('span');
       nameSpan.textContent = name || `joint_${i}`;
@@ -267,23 +238,25 @@ export class MujocoApp {
       valSpan.className = 'joint-val';
       valSpan.textContent = '0.00';
 
+      const header = document.createElement('div');
+      header.className = 'joint-label';
       header.appendChild(nameSpan);
       header.appendChild(valSpan);
 
       const slider = document.createElement('input');
-      slider.type = 'range';
-      slider.min = '-3.14';
-      slider.max = '3.14';
-      slider.step = '0.01';
+      slider.type  = 'range';
+      slider.min   = '-3.14';
+      slider.max   = '3.14';
+      slider.step  = '0.01';
       slider.value = '0';
-
-      const idx = i;
       slider.addEventListener('input', () => {
         const v = parseFloat(slider.value);
-        this.data.ctrl[idx] = v;
+        this.data.ctrl[i] = v;
         valSpan.textContent = v.toFixed(2);
       });
 
+      const row = document.createElement('div');
+      row.className = 'joint-row';
       row.appendChild(header);
       row.appendChild(slider);
       panel.appendChild(row);
@@ -295,25 +268,16 @@ export class MujocoApp {
     resetBtn.addEventListener('click', () => {
       this.mujoco.mj_resetData(this.model, this.data);
       this.mujoco.mj_forward(this.model, this.data);
-      panel.querySelectorAll('input[type=range]').forEach((el) => {
-        (el as HTMLInputElement).value = '0';
-      });
-      panel.querySelectorAll('.joint-val').forEach((el) => {
-        el.textContent = '0.00';
-      });
+      panel.querySelectorAll<HTMLInputElement>('input[type=range]').forEach(el => { el.value = '0'; });
+      panel.querySelectorAll('.joint-val').forEach(el => { el.textContent = '0.00'; });
     });
     panel.appendChild(resetBtn);
 
     document.body.appendChild(panel);
   }
 
-  // ---------------------------------------------------------------------------
-  // Per-frame: sync Three.js meshes with MuJoCo geom world transforms
-  // ---------------------------------------------------------------------------
-
   private updateGeomTransforms() {
-    const xpos = this.data.geom_xpos;
-    const xmat = this.data.geom_xmat;
+    const { geom_xpos: xpos, geom_xmat: xmat } = this.data;
 
     for (const [g, mesh] of this.geomMeshes) {
       const p = g * 3;
@@ -321,6 +285,7 @@ export class MujocoApp {
 
       mesh.position.set(xpos[p], xpos[p + 1], xpos[p + 2]);
 
+      // geom_xmat is a row-major 3×3 rotation matrix
       this.tmpMat4.set(
         xmat[m + 0], xmat[m + 1], xmat[m + 2], 0,
         xmat[m + 3], xmat[m + 4], xmat[m + 5], 0,
@@ -331,15 +296,8 @@ export class MujocoApp {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Render loop
-  // ---------------------------------------------------------------------------
-
   private loop() {
-    for (let i = 0; i < 5; i++) {
-      this.mujoco.mj_step(this.model, this.data);
-    }
-
+    for (let i = 0; i < 5; i++) this.mujoco.mj_step(this.model, this.data);
     this.updateGeomTransforms();
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
