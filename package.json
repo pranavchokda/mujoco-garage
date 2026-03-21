@@ -1,7 +1,9 @@
 {
   "scripts": {
-    "dev:ur5e":   "vite --config examples/02_universal_ur5e/vite.demo.config.ts",
-    "build:ur5e": "vite build --config examples/02_universal_ur5e/vite.demo.config.ts"
+    "dev:ur5e":        "vite --config examples/02_universal_ur5e/vite.demo.config.ts",
+    "build:ur5e":      "vite build --config examples/02_universal_ur5e/vite.demo.config.ts",
+    "dev:ur5e-teleop": "vite --config examples/03_universal_ur5e_teleop/vite.demo.config.ts",
+    "build:ur5e-teleop": "vite build --config examples/03_universal_ur5e_teleop/vite.demo.config.ts"
   },
   "dependencies": {
     "mujoco-js": "^0.0.7",

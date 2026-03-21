@@ -71,16 +71,27 @@ An interactive, physics-accurate simulation of the [Universal Robots UR5e](https
 
 ```sh
 npm install
-./dev.sh start   # starts the Vite dev server at http://localhost:5173
-./dev.sh stop    # stops it
 ```
 
-`dev.sh` runs the dev server in the background and tracks the process via `.dev.pid`.
+`dev.sh` runs dev servers in the background, each tracked by its own PID file.
+
+```sh
+# Start a specific example
+./dev.sh start ur5e           # http://localhost:5173  (02_universal_ur5e)
+./dev.sh start ur5e-teleop    # http://localhost:5174  (03_universal_ur5e_teleop)
+./dev.sh start all            # both at once
+
+# Stop
+./dev.sh stop ur5e
+./dev.sh stop ur5e-teleop
+./dev.sh stop all
+```
 
 ## Building for production
 
 ```sh
-npm run build:ur5e  # outputs to dist/examples/02_universal_ur5e/
+npm run build:ur5e          # outputs to dist/examples/02_universal_ur5e/
+npm run build:ur5e-teleop   # outputs to dist/examples/03_universal_ur5e_teleop/
 ```
 
 Deployment to GitHub Pages is automated via `.github/workflows/deploy.yml` on every push to `main`.

@@ -30,6 +30,9 @@ jobs:
       - name: Build UR5e example
         run: npm run build:ur5e
 
+      - name: Build UR5e Teleop example
+        run: npm run build:ur5e-teleop
+
       - name: Copy root index.html to dist
         run: cp index.html dist/index.html
 

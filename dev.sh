@@ -4,26 +4,68 @@ set -euo pipefail
 PID_FILE=".dev.pid"
 
 start() {
-  if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-    echo "Already running (PID $(cat "$PID_FILE"))"
-    exit 1
+  local target="${1:-}"
+  case "$target" in
+    ur5e)
+      start_one "ur5e" "dev:ur5e" ".dev.ur5e.pid"
+      ;;
+    ur5e-teleop)
+      start_one "ur5e-teleop" "dev:ur5e-teleop" ".dev.ur5e-teleop.pid"
+      ;;
+    all)
+      start_one "ur5e"        "dev:ur5e"        ".dev.ur5e.pid"
+      start_one "ur5e-teleop" "dev:ur5e-teleop" ".dev.ur5e-teleop.pid"
+      ;;
+    *)
+      echo "Usage: $0 start {ur5e|ur5e-teleop|all}"
+      exit 1
+      ;;
+  esac
+}
+
+start_one() {
+  local name="$1" script="$2" pid_file="$3"
+  if [[ -f "$pid_file" ]] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
+    echo "$name already running (PID $(cat "$pid_file"))"
+    return
   fi
-  npm run dev:ur5e &
-  echo $! > "$PID_FILE"
-  echo "Started (PID $!)"
+  npm run "$script" &
+  echo $! > "$pid_file"
+  echo "$name started (PID $!)"
 }
 
 stop() {
-  if [[ ! -f "$PID_FILE" ]]; then
-    echo "Not running"
-    exit 1
+  local target="${1:-}"
+  case "$target" in
+    ur5e)
+      stop_one "ur5e"        ".dev.ur5e.pid"
+      ;;
+    ur5e-teleop)
+      stop_one "ur5e-teleop" ".dev.ur5e-teleop.pid"
+      ;;
+    all)
+      stop_one "ur5e"        ".dev.ur5e.pid"
+      stop_one "ur5e-teleop" ".dev.ur5e-teleop.pid"
+      ;;
+    *)
+      echo "Usage: $0 stop {ur5e|ur5e-teleop|all}"
+      exit 1
+      ;;
+  esac
+}
+
+stop_one() {
+  local name="$1" pid_file="$2"
+  if [[ ! -f "$pid_file" ]]; then
+    echo "$name not running"
+    return
   fi
-  kill "$(cat "$PID_FILE")" && rm "$PID_FILE"
-  echo "Stopped"
+  kill "$(cat "$pid_file")" 2>/dev/null && rm "$pid_file"
+  echo "$name stopped"
 }
 
 case "${1:-}" in
-  start) start ;;
-  stop)  stop  ;;
-  *)     echo "Usage: $0 {start|stop}" ; exit 1 ;;
+  start) start "${2:-}" ;;
+  stop)  stop  "${2:-}" ;;
+  *)     echo "Usage: $0 {start|stop} {ur5e|ur5e-teleop|all}" ; exit 1 ;;
 esac
