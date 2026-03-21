@@ -67,6 +67,57 @@ An interactive, physics-accurate simulation of the [Universal Robots UR5e](https
 
 ---
 
+### 03 — Universal Robots UR5e Teleop
+
+**Live demo:** https://pranavchokda.github.io/mujoco-garage/examples/03_universal_ur5e_teleop/
+
+Extends example 02 with real-time keyboard teleoperation — hold a key to continuously drive any of the six joints while the physics simulation runs.
+
+#### What it does
+
+- Everything from example 02 (MuJoCo WASM physics, Three.js rendering, slider UI)
+- Maps 12 keyboard keys to joint commands — hold a key to continuously move a joint
+- Sliders and value displays stay in sync with keyboard-driven motion
+- A keyboard reference overlay (bottom-left) shows all bindings at a glance
+
+#### Keyboard bindings
+
+| Keys | Joint |
+|------|-------|
+| Q / A | shoulder_pan ± |
+| W / S | shoulder_lift ± |
+| E / D | elbow ± |
+| R / F | wrist_1 ± |
+| T / G | wrist_2 ± |
+| Y / H | wrist_3 ± |
+
+#### Components
+
+| File | Role |
+|------|------|
+| [main.ts](examples/03_universal_ur5e_teleop/main.ts) | Entry point — same as example 02 |
+| [mujoco-app.ts](examples/03_universal_ur5e_teleop/mujoco-app.ts) | Core class — all physics, rendering, UI, and keyboard teleop logic |
+| [style.css](examples/03_universal_ur5e_teleop/style.css) | Layout styles plus `.key-hint` badges and `#keyboard-help` overlay |
+| [index.html](examples/03_universal_ur5e_teleop/index.html) | HTML shell |
+| [public/coi-serviceworker.js](examples/03_universal_ur5e_teleop/public/coi-serviceworker.js) | COOP/COEP header injection for GitHub Pages |
+| [vite.demo.config.ts](examples/03_universal_ur5e_teleop/vite.demo.config.ts) | Vite config pointing at this example's root and output directory |
+
+#### Teleop additions in `mujoco-app.ts`
+
+**`KEY_BINDINGS`** — a constant map from key character to `{ joint: number, dir: +1 | -1 }`, covering all 6 joints with positive and negative directions.
+
+**`setupKeyboard()`** — registers `keydown` / `keyup` / `blur` listeners that maintain a `keysHeld: Set<string>` of currently pressed keys.
+
+**`applyKeyboardControl()`** — called once per animation frame before `mj_step`. For each held key it nudges `data.ctrl[joint]` by `±0.008 rad`, clamped to `±3.14`. Updates the corresponding slider element and value display to keep them in sync.
+
+**`loop()`** — unchanged structure from example 02, with `applyKeyboardControl()` prepended:
+1. Apply keyboard control increments
+2. Step simulation 5× (`mj_step`)
+3. Sync Three.js mesh transforms from `geom_xpos` / `geom_xmat`
+4. Update orbit controls and render
+
+---
+
 ## Running locally
 
 ```sh
